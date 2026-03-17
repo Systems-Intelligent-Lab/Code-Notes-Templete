@@ -36,18 +36,21 @@ def replace_block(md_text: str) -> str:
     return BLOCK_RE.sub(_repl, md_text)
 
 
-def clean_output_dir() -> None:
-    if not OUTPUT_DIR.exists():
-        return
-    for p in sorted(OUTPUT_DIR.rglob("*"), reverse=True):
-        if p.is_file():
-            p.unlink()
-        elif p.is_dir():
-            p.rmdir()
+def ensure_vitepress_config() -> None:
+    """
+    Ensure docs_generated/.vitepress/config.ts exists and re-exports the real config.
+
+    这样无论是本地还是 GitHub Actions，使用 docs_generated 作为根目录构建时，
+    都会复用 docs/.vitepress/config.ts 中的所有站点配置。
+    """
+    vp_dir = OUTPUT_DIR / ".vitepress"
+    vp_dir.mkdir(parents=True, exist_ok=True)
+    config_path = vp_dir / "config.ts"
+    content = "import config from '../../../docs/.vitepress/config'\n\nexport default config\n"
+    config_path.write_text(content, encoding="utf-8")
 
 
 def main() -> None:
-    clean_output_dir()
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
     for md_path in DOCS_DIR.rglob("*.md"):
@@ -60,6 +63,7 @@ def main() -> None:
         out_path.write_text(new_text, encoding="utf-8")
         print(f"processed {rel}")
 
+    ensure_vitepress_config()
     print(f"All markdown files expanded into {OUTPUT_DIR}")
 
 
