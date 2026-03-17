@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+import shutil
 from pathlib import Path
 
 from extract_snippet import extract_symbol_source, SymbolType
@@ -38,16 +39,16 @@ def replace_block(md_text: str) -> str:
 
 def ensure_vitepress_config() -> None:
     """
-    Ensure docs_generated/.vitepress/config.ts exists and re-exports the real config.
+    Copy docs/.vitepress/config.ts into docs_generated/.vitepress/config.ts.
 
-    这样无论是本地还是 GitHub Actions，使用 docs_generated 作为根目录构建时，
-    都会复用 docs/.vitepress/config.ts 中的所有站点配置。
+    直接复制而非 re-export，避免 esbuild 处理跨目录 ESM 导入链时出现的
+    "ESM file cannot be loaded by require" 错误。
     """
     vp_dir = OUTPUT_DIR / ".vitepress"
     vp_dir.mkdir(parents=True, exist_ok=True)
-    config_path = vp_dir / "config.ts"
-    content = "import config from '../../../docs/.vitepress/config'\n\nexport default config\n"
-    config_path.write_text(content, encoding="utf-8")
+    src_config = DOCS_DIR / ".vitepress" / "config.ts"
+    dst_config = vp_dir / "config.ts"
+    shutil.copy2(src_config, dst_config)
 
 
 def main() -> None:
