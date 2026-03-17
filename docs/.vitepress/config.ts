@@ -1,6 +1,7 @@
 import { defineConfig } from 'vitepress'
 
 export default defineConfig({
+  base: '/Code-Notes-Templete/',
   title: 'Code Notes',
   description: 'Python 代码笔记与示例',
   lang: 'zh-CN',
