@@ -1,0 +1,14 @@
+{
+  "name": "code-notes-templete",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "docs:prebuild": "python scripts/expand_py_symbols.py",
+    "docs:dev": "vitepress dev docs_generated",
+    "docs:build": "npm run docs:prebuild && vitepress build docs_generated",
+    "docs:preview": "vitepress preview docs_generated"
+  },
+  "devDependencies": {
+    "vitepress": "^1.6.4"
+  }
+}
