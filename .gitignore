@@ -210,5 +210,7 @@ __marimo__/
 node_modules/
 
 # VitePress generated docs (build artifacts)
-docs_generated/
+# 只忽略缓存和最终打包产物，保留中间生成的 Markdown 和配置文件
+docs_generated/.vitepress/cache/
+docs_generated/.vitepress/dist/
 
